@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+body {
+  @apply bg-cover bg-center bg-no-repeat  bg-white/35 min-h-screen bg-blend-soft-light;
+  background-image: url('../src/assets/Images/background_orange.png');
+}
+
