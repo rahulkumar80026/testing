@@ -90,9 +90,9 @@ export default function AdminLoginPage() {
         </div>
       )}
 
-      <div className="w-full max-w-5xl bg-white shadow-xl rounded-2xl flex flex-col md:flex-row overflow-hidden">
-        {/* Left side - Form */}
-        <div className="w-full md:w-1/2 p-10">
+      <div className="w-full max-w-4xl bg-white shadow-xl rounded-2xl flex flex-col md:flex-row overflow-hidden h-110">
+        {/* Left side - Form (60%) */}
+        <div className="w-full md:w-3/5 p-10">
           <div className="flex items-center mb-6">
             <img src={logo} alt="Logo" className="h-10 mr-2" />
             <h1 className="text-xl font-bold">Admin Login</h1>
@@ -108,7 +108,6 @@ export default function AdminLoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-            
             />
             <input
               type="password"
@@ -132,8 +131,11 @@ export default function AdminLoginPage() {
           </form>
         </div>
 
-        {/* Right side - Slider */}
-        <div className="hidden md:flex w-1/2 bg-gradient-to-br from-orange-50 to-orange-100 items-center justify-center p-10 relative">
+        {/* Middle Divider */}
+        <div className="hidden md:block w-px bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200 shadow-md"></div>
+
+        {/* Right side - Slider (40%) */}
+        <div className="hidden md:flex w-2/5 bg items-center justify-center p-10 relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={index}
@@ -146,7 +148,7 @@ export default function AdminLoginPage() {
               <img
                 src={slides[index].img}
                 alt={slides[index].title}
-                className="w-64 mx-auto mb-6 drop-shadow-lg"
+                className="w-64 mx-auto mb-6"
               />
               <h2 className="text-xl font-bold text-gray-800">
                 {slides[index].title}
