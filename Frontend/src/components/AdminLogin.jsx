@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import API from "../services/api";
+
 import logo from "../assets/Images/logo.png";
 import slide1 from "../assets/Images/slide1.png";
 import slide2 from "../assets/Images/slide1.png";
 import slide3 from "../assets/Images/slide1.png";
+
+import "../assets/css/loader.css";
 
 const slides = [
   {
@@ -23,19 +29,21 @@ const slides = [
   },
 ];
 
-export default function SignupPage() {
+export default function AdminLoginPage() {
   const [index, setIndex] = useState(0);
   const [progress, setProgress] = useState(0);
-  const duration = 5000; // 5 seconds per slide
 
-  const nextSlide = () => setIndex((prev) => (prev + 1) % slides.length);
-  const prevSlide = () =>
-    setIndex((prev) => (prev - 1 + slides.length) % slides.length);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Auto slide + progress bar logic
+  const navigate = useNavigate();
+  const duration = 3000;
+
+  // Auto slide + progress bar
   useEffect(() => {
     const slideTimer = setInterval(() => {
-      nextSlide();
+      setIndex((prev) => (prev + 1) % slides.length);
       setProgress(0);
     }, duration);
 
@@ -51,38 +59,75 @@ export default function SignupPage() {
     };
   }, [index]);
 
+  // Login handler
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await API.post("/auth/login", { username, password });
+
+      sessionStorage.setItem("token", res.data.token);
+
+      toast.success("Login Successful 🎉");
+      navigate("/admin/dashboard");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Invalid credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 relative">
+      {/* Loader overlay */}
+      {loading && (
+        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="loader-circle-9">
+            <span></span>
+            Loading
+          </div>
+        </div>
+      )}
+
       <div className="w-full max-w-5xl bg-white shadow-xl rounded-2xl flex flex-col md:flex-row overflow-hidden">
         {/* Left side - Form */}
         <div className="w-full md:w-1/2 p-10">
           <div className="flex items-center mb-6">
             <img src={logo} alt="Logo" className="h-10 mr-2" />
-            <h1 className="text-xl font-bold">Sign up</h1>
+            <h1 className="text-xl font-bold">Admin Login</h1>
           </div>
 
-          <p className="mb-6 text-gray-500">
-            Create your account to access 
-          </p>
+          <p className="mb-6 text-gray-500">Enter credentials to continue</p>
 
-          <form className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4">
             <input
-              type="email"
-              placeholder="Email address"
+              type="text"
+              placeholder="Login Id"
               className="w-full p-3 border rounded-lg focus:ring focus:ring-blue-400"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
+            
             />
             <input
               type="password"
               placeholder="Password"
               className="w-full p-3 border rounded-lg focus:ring focus:ring-blue-400"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
             <button
               type="submit"
-              className="w-full bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition"
+              disabled={loading}
+              className={`w-full ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-orange-500 hover:bg-orange-600"
+              } text-white py-3 rounded-lg transition`}
             >
-              Sign Up
+              Log In
             </button>
           </form>
         </div>
@@ -111,6 +156,7 @@ export default function SignupPage() {
               </p>
             </motion.div>
           </AnimatePresence>
+
           {/* Progress indicators */}
           <div className="absolute bottom-6 flex gap-2 justify-center">
             {slides.map((_, i) => (
@@ -119,7 +165,6 @@ export default function SignupPage() {
                 onClick={() => setIndex(i)}
                 className="relative w-8 h-1 bg-gray-300 rounded cursor-pointer overflow-hidden"
               >
-                {/* Progress animation only for active dash */}
                 {index === i && (
                   <motion.div
                     className="absolute left-0 top-0 h-full bg-blue-500"

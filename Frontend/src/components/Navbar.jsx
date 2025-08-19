@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import logo from "../assets/Images/logo.png";
 
 export default function AdminNavbar() {
@@ -10,7 +13,8 @@ export default function AdminNavbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/admin");
+    toast.success("Logged out successfully!", { position: "top-right" });
+    navigate("/");
   };
 
   // Function to check if route is active
@@ -23,13 +27,19 @@ export default function AdminNavbar() {
     <nav className="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/admin/dashboard")}>
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={() => navigate("/admin/dashboard")}
+        >
           <img src={logo} alt="Logo" className="h-10" />
         </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-6">
-          <Link to="/admin/dashboard" className={`${isActive("/admin/dashboard")}`}>
+          <Link
+            to="/admin/dashboard"
+            className={`${isActive("/admin/dashboard")}`}
+          >
             Dashboard
           </Link>
           <Link to="/admin/menu" className={`${isActive("/admin/menu")}`}>
@@ -69,7 +79,9 @@ export default function AdminNavbar() {
       {/* Mobile Menu with animation */}
       <div
         className={`md:hidden bg-white shadow-md px-4 py-3 transition-all duration-300 ease-in-out ${
-          mobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
+          mobileMenuOpen
+            ? "max-h-96 opacity-100"
+            : "max-h-0 opacity-0 overflow-hidden"
         }`}
       >
         <Link
