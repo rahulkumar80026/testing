@@ -1,27 +1,29 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MealSection from "./MealSection";
+import { useLoader } from "../context/LoaderContext";
 
 export default function CustomerView() {
   const [menu, setMenu] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { showLoader, hideLoader } = useLoader();
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
+    showLoader();
     axios
       .get(`http://localhost:5000/api/menu/${today}`)
       .then((res) => {
         setMenu(res.data);
-        setLoading(false);
       })
       .catch(() => {
         setMenu(null);
-        setLoading(false);
+      })
+      .finally(() => {
+        hideLoader();
       });
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Loading menu...</p>;
   if (!menu) return <p className="text-center mt-10">No menu available</p>;
 
   return (

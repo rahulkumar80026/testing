@@ -1,14 +1,20 @@
 
 import { Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 
 export default function ProtectedRoute({ children }) {
-  const token = sessionStorage.getItem("token");
+  const { isAuth, loadingAuth } = useAuth();
 
-  if (!token) {
-    // If no token → redirect to login page
-    return <Navigate to="/" replace />;
+  console.log("ProtectedRoute isAuthenticated:", isAuth);
+  console.log("children", children);
+
+
+
+  if (loadingAuth) {
+    // Show a loading spinner or placeholder while checking auth status
+    return <div>Loading...</div>;
   }
 
   // Otherwise → allow access
-  return children;
+   return isAuth ? children : <Navigate to="/login" replace />;
 }

@@ -1,181 +1,224 @@
-import { useState, useEffect } from "react";
+// src/pages/AdminLoginPage.jsx
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
 import API from "../services/api";
+import { useLoader } from "../components/context/LoaderContext";
 
 import logo from "../assets/Images/logo.png";
 import slide1 from "../assets/Images/slide1.png";
 import slide2 from "../assets/Images/slide1.png";
 import slide3 from "../assets/Images/slide1.png";
+import { useAuth } from "./context/AuthContext";
 
-import "../assets/css/loader.css";
-
-const slides = [
-  {
-    img: slide1,
-    title: "MFA for all accounts",
-    text: "Secure online accounts with OneAuth 2FA. Back up OTP secrets and never lose access.",
-  },
-  {
-    img: slide2,
-    title: "Seamless Access",
-    text: "Sign in once and get access to all your apps with single sign-on functionality.",
-  },
-  {
-    img: slide3,
-    title: "Stay Protected",
-    text: "Advanced encryption keeps your data safe and ensures privacy.",
-  },
-];
+const schema = yup.object({
+  username: yup.string().required("Username is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+});
 
 export default function AdminLoginPage() {
-  const [index, setIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
-
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
+  const { showLoader, hideLoader } = useLoader();
+
+  // Slider
+  const [index, setIndex] = useState(0);
   const duration = 3000;
 
-  // Auto slide + progress bar
+  const slides = useMemo(
+    () => [
+      {
+        img: slide1,
+        title: "MFA for all accounts",
+        text: "Secure online accounts with OneAuth 2FA. Back up OTP secrets and never lose access.",
+      },
+      {
+        img: slide2,
+        title: "Seamless Access",
+        text: "Sign in once and get access to all your apps with single sign-on functionality.",
+      },
+      {
+        img: slide3,
+        title: "Stay Protected",
+        text: "Advanced encryption keeps your data safe and ensures privacy.",
+      },
+    ],
+    []
+  );
+
   useEffect(() => {
-    const slideTimer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % slides.length);
-      setProgress(0);
-    }, duration);
+    const t = setInterval(
+      () => setIndex((p) => (p + 1) % slides.length),
+      duration
+    );
+    return () => clearInterval(t);
+  }, [slides.length]);
 
-    const progressTimer = setInterval(() => {
-      setProgress((prev) =>
-        prev >= 100 ? 100 : prev + 100 / (duration / 100)
-      );
-    }, 100);
+  // Form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm({ resolver: yupResolver(schema), mode: "onTouched" });
 
-    return () => {
-      clearInterval(slideTimer);
-      clearInterval(progressTimer);
-    };
-  }, [index]);
-
-  // Login handler
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const [showPass, setShowPass] = useState(false);
+  const { login } = useAuth();
+  const onSubmit = async (data) => {
+    showLoader();
     try {
-      const res = await API.post("/auth/login", { username, password });
+      const res = await API.post("/auth/login", data);
+      const token = res?.data?.token;
+      if (!token) throw new Error("Token missing in response");
 
-      sessionStorage.setItem("token", res.data.token);
-
+      // sessionStorage.setItem("token", token);
+      login();
       toast.success("Login Successful 🎉");
-      navigate("/admin/dashboard");
+      navigate("/dashboard");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Invalid credentials");
+      const msg =
+        err?.response?.data?.message || err?.message || "Invalid credentials";
+      toast.error(msg);
+      setError("username", { message: " " }, { shouldFocus: false });
+      setError("password", { message: "" }, { shouldFocus: false });
     } finally {
-      setLoading(false);
+      hideLoader();
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 relative">
-      {/* Loader overlay */}
-      {loading && (
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="loader-circle-9">
-            <span></span>
-            Loading
-          </div>
-        </div>
-      )}
-
-      <div className="w-full max-w-4xl bg-white shadow-xl rounded-2xl flex flex-col md:flex-row overflow-hidden h-110">
-        {/* Left side - Form (60%) */}
-        <div className="w-full md:w-3/5 p-10">
-          <div className="flex items-center mb-6">
-            <img src={logo} alt="Logo" className="h-10 mr-2" />
-            <h1 className="text-xl font-bold">Admin Login</h1>
+    <div className="min-h-screen  flex items-center justify-center bg-gray-50 px-4 overflow-hidden">
+      <div className="w-full max-w-5xl h-full md:h-auto bg-white shadow-xl rounded-2xl grid md:grid-cols-[1fr_auto_1fr] overflow-hidden">
+        {/* Left: Form */}
+        <div className="p-10 flex flex-col justify-center">
+          <div className="mb-6">
+            <img src={logo} alt="Logo" className="h-10 mb-4" />
+            <h1 className="text-2xl font-bold">Sign in</h1>
+            <p className="mt-2 text-gray-600">
+              Enter your credentials to continue
+            </p>
           </div>
 
-          <p className="mb-6 text-gray-500">Enter credentials to continue</p>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Username */}
+            <div>
+              <input
+                type="text"
+                placeholder="Login Id"
+                className={`w-full p-3 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 ${
+                  errors.username
+                    ? "focus:ring-red-400"
+                    : "focus:ring-orange-400"
+                }`}
+                {...register("username")}
+                autoComplete="username"
+              />
+              {errors.username && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.username.message}
+                </p>
+              )}
+            </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <input
-              type="text"
-              placeholder="Login Id"
-              className="w-full p-3 border rounded-lg focus:ring focus:ring-blue-400"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full p-3 border rounded-lg focus:ring focus:ring-blue-400"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            {/* Password with toggle */}
+            <div>
+              <div className="relative">
+                <input
+                  type={showPass ? "text" : "password"}
+                  placeholder="Password"
+                  className={`w-full p-3 pr-12 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 ${
+                    errors.password
+                      ? "focus:ring-red-400"
+                      : "focus:ring-orange-400"
+                  }`}
+                  {...register("password")}
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPass((s) => !s)}
+                  className="absolute inset-y-0 right-3 my-auto text-gray-500 hover:text-gray-700"
+                  aria-label={showPass ? "Hide password" : "Show password"}
+                >
+                  {showPass ? "🙈" : "👁️"}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            {/* Submit */}
             <button
               type="submit"
-              disabled={loading}
-              className={`w-full ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-orange-500 hover:bg-orange-600"
-              } text-white py-3 rounded-lg transition`}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg transition flex items-center justify-center gap-2"
             >
               Log In
             </button>
           </form>
+
+          <div className="mt-4 text-sm text-right">
+            <button
+              type="button"
+              className="text-orange-600 hover:underline"
+              onClick={() =>
+                toast.info("Please contact admin to reset password.")
+              }
+            >
+              Forgot password?
+            </button>
+          </div>
         </div>
 
-        {/* Middle Divider */}
-        <div className="hidden md:block w-px bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200 shadow-md"></div>
+        {/* Divider */}
+        <div className="hidden md:block w-px bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200" />
 
-        {/* Right side - Slider (40%) */}
-        <div className="hidden md:flex w-2/5 bg items-center justify-center p-10 relative">
+        {/* Right: Slider */}
+        <div className="hidden md:flex items-center justify-center p-10 relative bg-gradient-to-br from-orange-400 to-red-500 h-full">
+          <div className="absolute inset-0 bg-black/35" />
           <AnimatePresence mode="wait">
             <motion.div
               key={index}
-              initial={{ opacity: 0, x: 100 }}
+              initial={{ opacity: 0, x: 80 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.7 }}
-              className="text-center"
+              exit={{ opacity: 0, x: -80 }}
+              transition={{ duration: 0.6 }}
+              className="text-center text-white relative z-10"
             >
               <img
                 src={slides[index].img}
                 alt={slides[index].title}
-                className="w-64 mx-auto mb-6"
+                className="w-56 mx-auto mb-6 drop-shadow-xl"
               />
-              <h2 className="text-xl font-bold text-gray-800">
-                {slides[index].title}
-              </h2>
-              <p className="text-gray-600 mt-2 max-w-sm mx-auto">
+              <h2 className="text-2xl font-bold">{slides[index].title}</h2>
+              <p className="text-white/90 mt-2 max-w-sm mx-auto">
                 {slides[index].text}
               </p>
             </motion.div>
           </AnimatePresence>
 
-          {/* Progress indicators */}
-          <div className="absolute bottom-6 flex gap-2 justify-center">
+          {/* Dots */}
+          <div className="absolute bottom-5 left-0 right-0 flex gap-2 justify-center z-10">
             {slides.map((_, i) => (
-              <div
+              <button
                 key={i}
                 onClick={() => setIndex(i)}
-                className="relative w-8 h-1 bg-gray-300 rounded cursor-pointer overflow-hidden"
-              >
-                {index === i && (
-                  <motion.div
-                    className="absolute left-0 top-0 h-full bg-blue-500"
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: duration / 1000, ease: "linear" }}
-                  />
-                )}
-              </div>
+                className={`h-1 rounded-full transition-all ${
+                  index === i
+                    ? "w-8 bg-white"
+                    : "w-6 bg-white/50 hover:bg-white/70"
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
             ))}
           </div>
         </div>

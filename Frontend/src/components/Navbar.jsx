@@ -10,22 +10,23 @@ export default function AdminNavbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     toast.success("Logged out successfully!", { position: "top-right" });
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   // Function to check if route is active
   const isActive = (path) =>
     location.pathname === path
-      ? "text-orange-500 font-semibold"
-      : "text-gray-700 hover:text-orange-500";
+      ? "text-orange-500 font-semibold border-b-2 border-orange-500"
+      : "text-gray-700 hover:text-orange-500 transition";
 
   return (
     <nav className="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <div
           className="flex items-center gap-2 cursor-pointer"
@@ -35,26 +36,23 @@ export default function AdminNavbar() {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex gap-6">
-          <Link
-            to="/admin/dashboard"
-            className={`${isActive("/admin/dashboard")}`}
-          >
+        <div className="hidden md:flex gap-8 text-lg font-medium">
+          <Link to="/admin/dashboard" className={isActive("/admin/dashboard")}>
             Dashboard
           </Link>
-          <Link to="/admin/menu" className={`${isActive("/admin/menu")}`}>
-            Menu
+          <Link to="/admin/menu" className={isActive("/admin/menu")}>
+            Current Menu
           </Link>
-          <Link to="/admin/orders" className={`${isActive("/admin/orders")}`}>
-            Orders
+          <Link to="/admin/updatemenu" className={isActive("/admin/updatemenu")}>
+            Update Menu
           </Link>
-          <Link to="/admin/reports" className={`${isActive("/admin/reports")}`}>
-            Reports
+          <Link to="/admin/meals&timing" className={isActive("/admin/meals&timing")}>
+            Meals & Timing
           </Link>
         </div>
 
         {/* Right Side */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 relative">
           {/* Mobile Menu Toggle */}
           <button
             className="md:hidden text-gray-600"
@@ -64,14 +62,24 @@ export default function AdminNavbar() {
           </button>
 
           {/* Profile / Logout (Desktop) */}
-          <div className="hidden md:flex items-center gap-4">
-            <FaUserCircle size={28} className="text-gray-600" />
-            <button
-              onClick={handleLogout}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md shadow-sm transition"
-            >
-              Logout
-            </button>
+          <div
+            className="hidden md:flex items-center gap-2 cursor-pointer relative"
+            onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+          >
+            <FaUserCircle size={30} className="text-gray-600 hover:text-orange-500 transition" />
+            <span className="text-gray-700 font-medium">Admin</span>
+
+            {/* Dropdown */}
+            {profileMenuOpen && (
+              <div className="absolute top-12 right-0 bg-white shadow-lg rounded-lg w-40 py-2 border">
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -96,21 +104,21 @@ export default function AdminNavbar() {
           className={`block py-2 ${isActive("/admin/menu")}`}
           onClick={() => setMobileMenuOpen(false)}
         >
-          Menu
+          Current Menu
         </Link>
         <Link
-          to="/admin/orders"
-          className={`block py-2 ${isActive("/admin/orders")}`}
+          to="/admin/updatemenu"
+          className={`block py-2 ${isActive("/admin/updatemenu")}`}
           onClick={() => setMobileMenuOpen(false)}
         >
-          Orders
+          Update Menu
         </Link>
         <Link
-          to="/admin/reports"
-          className={`block py-2 ${isActive("/admin/reports")}`}
+          to="/admin/meals&timing"
+          className={`block py-2 ${isActive("/admin/meals&timing")}`}
           onClick={() => setMobileMenuOpen(false)}
         >
-          Reports
+          Meals & Timing
         </Link>
         <button
           onClick={() => {
