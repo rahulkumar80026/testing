@@ -1,36 +1,49 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useMemo, useState, useEffect } from "react";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [isAuth, setIsAuth] = useState(false);
-  const [loading, setLoading] = useState(true); // ✅ loading state
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  // Initialize from sessionStorage once
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
-
-    setLoading(false); // ✅ check complete
+    try {
+      const storedToken = sessionStorage.getItem("token");
+      if (storedToken && typeof storedToken === "string") {
+        setToken(storedToken);
+      }
+    } catch {
+      // ignore read errors
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // ✅ login function
-  const login = (token) => {
-    sessionStorage.setItem("token", token);
-    setIsAuth(true);
+  // Derived state
+  const isAuth = !!token;
+
+  const login = (newToken) => {
+    // Validate token if needed
+    sessionStorage.setItem("token", newToken);
+    setToken(newToken);
   };
 
-  // ✅ logout function
   const logout = () => {
     sessionStorage.removeItem("token");
-    setIsAuth(false);
+    setToken(null);
   };
 
-  return (
-    <AuthContext.Provider value={{ isAuth, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ isAuth, token, loading, login, logout }),
+    [isAuth, token, loading]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
+  return ctx;
 }

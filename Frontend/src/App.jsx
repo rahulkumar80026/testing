@@ -1,68 +1,68 @@
-import React, { useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import AdminLoginPage from "./components/AdminLogin";
-import Dashboard from "./pages/AdminDashboard";
-import Navbar from "./components/Navbar";
-import CustomerView from "./components/customerView/CustomerView";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { AuthProvider, useAuth } from "./components/context/AuthContext";
-import Footer from "./components/Footer";
-
+import { AuthProvider } from "./components/context/AuthContext";
 import { LoaderProvider, useLoader } from "./components/context/LoaderContext";
 import Loader from "./components/Loader";
+import CustomerRoutes from "./routes/CustomerRoutes";
+import AdminRoutes from "./routes/AdminRoutes";
+import API from "./services/api";
+import { io } from "socket.io-client";
 
-function Layout() {
-  const { isAuth } = useAuth();
 
-  const [abc,setabc] = React.useState(false);
-  const location = useLocation();
-  const { loading } = useLoader(); // ✅ loader context use
 
-  useEffect(()=>{setabc(isAuth)},[useAuth()])
+// ✅ Socket connection
+const socket = io("http://localhost:4000");
 
-  const hideNavbar = location.pathname === "/login";
-  console.log("nav" , isAuth)
-  console.log("abc" , abc)
-
-  return (
-    <div className="flex flex-col min-h-screen">
-      {/* Loader global */}
-      {loading && <Loader />}
-
-      {/* Navbar sirf jab login na ho aur correct page ho */}
-      <main className="flex-grow">
-        <Routes>
-          {/* Customer view */}
-          <Route path="/" element={<CustomerView />} />
-
-          {/* Admin login */}
-          <Route path="/login" element={<AdminLoginPage />} />
-
-          {/* Admin dashboard (protected) */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
-  );
+function LoaderWrapper() {
+  const { loading } = useLoader();
+  return loading ? <Loader /> : null;
 }
-
 function App() {
+  const [mealData, setMealData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchMenu = async () => {
+    try {
+      setLoading(true);
+      const res = await API.get("/menu-today");
+      setMealData(Array.isArray(res.data) ? res.data[0] : res.data);
+    } catch (err) {
+      console.error("Error fetching menu:", err);
+      setMealData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMenu();
+      // 🔥 Listen socket event
+    socket.on("menuUpdated", () => {
+      console.log("🔄 Menu updated, refetching...");
+      fetchMenu();
+    });
+
+    
+    return () => {
+      socket.off("menuUpdated");
+    };
+  }, []);
+
   return (
     <AuthProvider>
       <LoaderProvider>
         <BrowserRouter>
-          <Layout />
+          <LoaderWrapper />
+
+          {/* Customer Pages */}
+          <CustomerRoutes menuData={mealData} />
+
+          {/* Admin Pages */}
+          <AdminRoutes onMenuUpdate={fetchMenu} />
+
           <ToastContainer position="top-right" autoClose={2000} />
         </BrowserRouter>
       </LoaderProvider>

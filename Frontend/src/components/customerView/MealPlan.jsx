@@ -1,0 +1,52 @@
+import MealHeader from "./MealHeader";
+import MealCard from "./MealCard";
+import bgImage from "../../assets/Images/bg.png";
+
+export default function MealPlan({ menuData }) {
+  console.log("menuData pass ho rha hai:", menuData);
+  console.log("slots:", menuData?.slots);
+
+  if (!menuData) {
+    return (
+      <div className="w-screen h-screen flex flex-col items-center justify-center bg-blue-50">
+        {/* Spinner */}
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-6"></div>
+
+        {/* Loading Text */}
+        <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-2">
+          Loading Today's Menu
+        </h2>
+        <p className="text-blue-800 text-lg">
+          Please wait while we fetch your delicious meals...
+        </p>
+      </div>
+    );
+  }
+  const {
+    Breakfast = [],
+    Lunch = [],
+    Snacks = [],
+    Dinner = [],
+  } = menuData?.slots || {};
+
+  return (
+  <div
+  className="w-screen h-screen flex flex-col bg-center bg-no-repeat p-10 py-5"
+  style={{ backgroundImage: `url(${bgImage})`, backgroundSize: "100% 100%" }}
+>
+
+
+
+      {/* Header */}
+      <MealHeader day={menuData.day} />
+
+      {/* Meal Cards */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
+        <MealCard title="Breakfast" items={Breakfast} />
+        <MealCard title="Lunch" items={Lunch} />
+        <MealCard title="Snacks" items={Snacks} />
+        <MealCard title="Dinner" items={Dinner} />
+      </div>
+    </div>
+  );
+}
