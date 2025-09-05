@@ -8,7 +8,7 @@ export default function MealCard({ title, items }) {
       <h2 className="text-4xl font-bold text-blue-900 mb-4 text-center">{title}</h2>
 
       {/* Items list */}
-      <ul className="space-y-2 text-blue-800 text-2xl break-words font-medium">
+      <ul className="space-y-2 text-blue-800 text-xl break-words font-medium">
         {items && items.length > 0 ? (
           items.map((item, index) => (
             <li key={index} className="list-disc ml-4">

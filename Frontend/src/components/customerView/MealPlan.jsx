@@ -41,7 +41,7 @@ export default function MealPlan({ menuData }) {
       <MealHeader day={menuData.day} />
 
       {/* Meal Cards */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-8">
         <MealCard title="Breakfast" items={Breakfast} />
         <MealCard title="Lunch" items={Lunch} />
         <MealCard title="Snacks" items={Snacks} />
