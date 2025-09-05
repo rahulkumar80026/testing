@@ -10,9 +10,9 @@ import API from "../services/api";
 import { useLoader } from "../components/context/LoaderContext";
 
 import logo from "../assets/Images/logo.png";
-import slide1 from "../assets/Images/slide1.png";
-import slide2 from "../assets/Images/slide1.png";
-import slide3 from "../assets/Images/slide1.png";
+import slide1 from "../assets/Images/slide1.jpg";
+import slide2 from "../assets/Images/slider2.jpg";
+import slide3 from "../assets/Images/slide3.png";
 import { useAuth } from "./context/AuthContext";
 import Footer from "./Footer";
 
@@ -36,25 +36,28 @@ export default function AdminLoginPage() {
     () => [
       {
         img: slide1,
-        title: "MFA for all accounts",
-        text: "Secure online accounts with OneAuth 2FA. Back up OTP secrets and never lose access.",
+        title: "Better Dining Experience",
+        text: "Clear and accurate displays help customers choose meals with ease.",
       },
       {
         img: slide2,
-        title: "Seamless Access",
-        text: "Sign in once and get access to all your apps with single sign-on functionality.",
+        title: "Save Time & Reduce Errors",
+        text: "Automated menu scheduling ensures accuracy and efficiency.",
       },
       {
         img: slide3,
-        title: "Stay Protected",
-        text: "Advanced encryption keeps your data safe and ensures privacy.",
+        title: "Designed for Canteens & Mess",
+        text: "Built to simplify operations for colleges, hostels, and offices.",
       },
     ],
     []
   );
 
   useEffect(() => {
-    const t = setInterval(() => setIndex((p) => (p + 1) % slides.length), duration);
+    const t = setInterval(
+      () => setIndex((p) => (p + 1) % slides.length),
+      duration
+    );
     return () => clearInterval(t);
   }, [slides.length]);
 
@@ -79,7 +82,8 @@ export default function AdminLoginPage() {
       toast.success("Login Successful 🎉");
       navigate("/dashboard");
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Invalid credentials";
+      const msg =
+        err?.response?.data?.message || err?.message || "Invalid credentials";
       toast.error(msg);
       setError("username", { message: " " }, { shouldFocus: false });
       setError("password", { message: "" }, { shouldFocus: false });
@@ -99,7 +103,9 @@ export default function AdminLoginPage() {
               <div className="mb-6">
                 <img src={logo} alt="Logo" className="h-10 mb-4" />
                 <h1 className="text-2xl font-bold">Sign in</h1>
-                <p className="mt-2 text-gray-600">Enter your credentials to continue</p>
+                <p className="mt-2 text-gray-600">
+                  Enter your credentials to continue
+                </p>
               </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -109,13 +115,17 @@ export default function AdminLoginPage() {
                     type="text"
                     placeholder="Login Id"
                     className={`w-full p-3 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 ${
-                      errors.username ? "focus:ring-red-400" : "focus:ring-orange-400"
+                      errors.username
+                        ? "focus:ring-red-400"
+                        : "focus:ring-orange-400"
                     }`}
                     {...register("username")}
                     autoComplete="username"
                   />
                   {errors.username && (
-                    <p className="text-sm text-red-500 mt-1">{errors.username.message}</p>
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.username.message}
+                    </p>
                   )}
                 </div>
 
@@ -126,7 +136,9 @@ export default function AdminLoginPage() {
                       type={showPass ? "text" : "password"}
                       placeholder="Password"
                       className={`w-full p-3 pr-12 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 ${
-                        errors.password ? "focus:ring-red-400" : "focus:ring-orange-400"
+                        errors.password
+                          ? "focus:ring-red-400"
+                          : "focus:ring-orange-400"
                       }`}
                       {...register("password")}
                       autoComplete="current-password"
@@ -141,7 +153,9 @@ export default function AdminLoginPage() {
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.password.message}
+                    </p>
                   )}
                 </div>
 
@@ -158,7 +172,9 @@ export default function AdminLoginPage() {
                 <button
                   type="button"
                   className="text-orange-600 hover:underline"
-                  onClick={() => toast.info("Please contact admin to reset password.")}
+                  onClick={() =>
+                    toast.info("Please contact admin to reset password.")
+                  }
                 >
                   Forgot password?
                 </button>
@@ -186,7 +202,9 @@ export default function AdminLoginPage() {
                     className="w-56 mx-auto mb-6 drop-shadow-xl"
                   />
                   <h2 className="text-2xl font-bold">{slides[index].title}</h2>
-                  <p className="text-white/90 mt-2 max-w-sm mx-auto">{slides[index].text}</p>
+                  <p className="text-white/90 mt-2 max-w-sm mx-auto">
+                    {slides[index].text}
+                  </p>
                 </motion.div>
               </AnimatePresence>
 
@@ -197,7 +215,9 @@ export default function AdminLoginPage() {
                     key={i}
                     onClick={() => setIndex(i)}
                     className={`h-1 rounded-full transition-all ${
-                      index === i ? "w-8 bg-white" : "w-6 bg-white/50 hover:bg-white/70"
+                      index === i
+                        ? "w-8 bg-white"
+                        : "w-6 bg-white/50 hover:bg-white/70"
                     }`}
                     aria-label={`Go to slide ${i + 1}`}
                   />

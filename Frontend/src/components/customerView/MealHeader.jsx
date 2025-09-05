@@ -3,7 +3,7 @@ import logo from "../../assets/Images/logo 1.png"
 
 export default function MealHeader({ day }) {
   return (
-    <div className="relative flex items-center justify-items-center ml-5 ">
+    <div className="relative flex items-center justify-center ml-5 ">
 
       {/* Center Title */}
       <h1 className="mx-auto text-3xl md:text-4xl font-bold text-blue-900 z-10 ">
