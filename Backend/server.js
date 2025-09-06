@@ -13,7 +13,7 @@ import scheduler from "./utils/scheduler.js";
 import { initSocket } from "./socket.js";
 
 dotenv.config();
-connectDB();
+
 
 const app = express();
 app.use(cors());
@@ -24,6 +24,9 @@ const server = http.createServer(app);
 
 // ✅ Init socket
 const io = initSocket(server);
+
+// ✅ Connect DB (change stream inside db.js will use getIo())
+connectDB();
 
 // Routes
 app.use("/api/auth", authRoutes);
