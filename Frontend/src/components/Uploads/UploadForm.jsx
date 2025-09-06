@@ -25,6 +25,9 @@ const UpdateMenu = ({ onMenuUpdate }) => {
       toast.success(res.data?.message || "File uploaded successfully!");
       setFile(null);
 
+      // ✅ Clear file input manually
+      document.getElementById("menu-upload-input").value = "";
+
       // ✅ Upload ke turant baad refresh
       if (onMenuUpdate) {
         await onMenuUpdate();
@@ -76,6 +79,7 @@ const UpdateMenu = ({ onMenuUpdate }) => {
           <span>{file ? "Change File" : "Click or Drag & Drop"}</span>
           <input
             type="file"
+             id="menu-upload-input"   // ✅ add this
             accept=".xlsx,.xls,.csv"
             className="hidden"
             onChange={handleFileChange}

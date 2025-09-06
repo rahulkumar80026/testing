@@ -40,7 +40,7 @@ export default function MealPlan({ menuData }) {
 
       {/* Meal Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 p-10 ml-30 -space-x-[1px]">
-      {/* <div className="grid grid-cols-4"> */}
+        {/* <div className="grid grid-cols-4"> */}
         {meals.map(([title, items]) => (
           <MealCard key={title} title={title} items={items} />
         ))}
