@@ -1,22 +1,30 @@
 // controllers/menuController.js
 import Menu from "../models/MenuModel.js";
 import { parseMenu } from "../services/parseExcelServices.js";
+import fs from "fs";
 import ExcelJS from "exceljs";
-import { io } from "../server.js"; // yaha import kiya
+import { getIo } from "../socket.js"; // yaha import kiya
 
 // Upload Excel
 export const uploadMenu = async (req, res) => {
   try {
+     const filePath = req.file.path;
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
-    const menus = await parseMenu(req.file.path);
+    const menus = await parseMenu(filePath);
 
     // Clear old menu & insert new
     await Menu.deleteMany({});
     await Menu.insertMany(menus);
 
-    // 🔥 Emit socket event
-    io.emit("menuUpdated", { success: true });
+    //  ✅ File delete kar do (important)
+    fs.unlink(filePath, (err) => {
+      if (err) console.error("❌ Error deleting uploaded file:", err);
+      else console.log("🗑 Deleted uploaded file:", filePath);
+    });
+
+    //  Emit socket event
+    getIo().emit("menuUpdated", { success: true });
 
     res.status(200).json({ success: true, menus });
   } catch (err) {

@@ -6,15 +6,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./components/context/AuthContext";
 import { LoaderProvider, useLoader } from "./components/context/LoaderContext";
 import Loader from "./components/Loader";
-import CustomerRoutes from "./routes/CustomerRoutes";
+import CustomerRoutes from "./routes/customerRoutes";
 import AdminRoutes from "./routes/AdminRoutes";
 import API from "./services/api";
 import { io } from "socket.io-client";
-
-
-
-// ✅ Socket connection
-const socket = io("http://localhost:4000");
 
 function LoaderWrapper() {
   const { loading } = useLoader();
@@ -38,14 +33,15 @@ function App() {
   };
 
   useEffect(() => {
+    // ✅ Socket connection
+    const socket = io("http://localhost:4000");
     fetchMenu();
-      // 🔥 Listen socket event
+    //  Listen socket event
     socket.on("menuUpdated", () => {
       console.log("🔄 Menu updated, refetching...");
       fetchMenu();
     });
 
-    
     return () => {
       socket.off("menuUpdated");
     };

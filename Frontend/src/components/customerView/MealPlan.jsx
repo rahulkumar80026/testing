@@ -22,30 +22,28 @@ export default function MealPlan({ menuData }) {
       </div>
     );
   }
-  const {
-    Breakfast = [],
-    Lunch = [],
-    Snacks = [],
-    Dinner = [],
-  } = menuData?.slots || {};
+
+  // ✅ Backend slots ko directly convert kar diya
+  const meals = Object.entries(menuData.slots || {});
 
   return (
-  <div
-  className="w-screen h-screen flex flex-col bg-center bg-no-repeat p-10 py-5"
-  style={{ backgroundImage: `url(${bgImage})`, backgroundSize: "100% 100%" }}
->
-
-
-
+    <div
+      className="w-screen h-screen flex flex-col bg-center bg-no-repeat"
+      style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: "100% 100%",
+      }}
+    >
       {/* Header */}
+
       <MealHeader day={menuData.day} />
 
       {/* Meal Cards */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-8">
-        <MealCard title="Breakfast" items={Breakfast} />
-        <MealCard title="Lunch" items={Lunch} />
-        <MealCard title="Snacks" items={Snacks} />
-        <MealCard title="Dinner" items={Dinner} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 p-10 ml-30 -space-x-[1px]">
+      {/* <div className="grid grid-cols-4"> */}
+        {meals.map(([title, items]) => (
+          <MealCard key={title} title={title} items={items} />
+        ))}
       </div>
     </div>
   );
