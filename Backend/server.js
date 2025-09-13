@@ -41,6 +41,6 @@ app.use(notFound);
 app.use(errorHandler);
 
 // ✅ IMPORTANT: use `server.listen`
-server.listen(process.env.PORT || 5000, () => {
+server.listen(process.env.PORT || 5000,"0.0.0.0", () => {
   console.log(`✅ Server running on port ${process.env.PORT || 5000}`);
 });
