@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../assets/Images/logo 1.png"
+import logo from "../../assets/Images/logo1.png"
 
 export default function MealHeader({ day }) {
   return (
