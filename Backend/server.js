@@ -16,7 +16,7 @@ dotenv.config();
 
 
 const app = express();
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "https://display-menu-f5f1.vercel.app" }));
 app.use(express.json());
 
 // ✅ Create HTTP server
