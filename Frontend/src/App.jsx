@@ -74,7 +74,7 @@ import { AuthProvider } from "./components/context/AuthContext";
 import { LoaderProvider, useLoader } from "./components/context/LoaderContext";
 import Loader from "./components/Loader";
 import CustomerRoutes from "./routes/customerRoutes";
-import AdminRoutes from "./routes/AdminRoutes";
+import AdminRoutes from "./routes/adminRoutes";
 import API from "./services/api";
 import { io } from "socket.io-client";
 
