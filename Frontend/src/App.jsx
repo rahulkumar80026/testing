@@ -106,7 +106,8 @@ function App() {
   useEffect(() => {
     fetchMenu(); // initial load
 
-    const socket = io("https://display-menu-1.onrender.com"); // backend URL
+    // const socket = io("https://display-menu-1.onrender.com"); // backend URL
+    const socket = io("http://localhost:4000"); // backend URL
 
     // Only update when backend emits a menu change
     socket.on("menuUpdated", ({ menu }) => {

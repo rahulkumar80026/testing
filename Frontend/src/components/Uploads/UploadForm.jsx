@@ -44,7 +44,7 @@ const UpdateMenu = ({ onMenuUpdate }) => {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await API.get("/download-menu", {
+      const response = await API.get("/api/download-menu", {
         responseType: "blob", // 👈 ensures binary
       });
 

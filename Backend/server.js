@@ -29,7 +29,7 @@ connectDB();
 
 // Routes
 app.use("/api/auth", authRoutes);
-// app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static("uploads"));
 app.use("/api", menuRoutes);
 
 // Start scheduler
