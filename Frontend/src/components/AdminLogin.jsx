@@ -15,6 +15,7 @@ import slide2 from "../assets/Images/slider2.jpg";
 import slide3 from "../assets/Images/slide3.png";
 import { useAuth } from "./context/AuthContext";
 import Footer from "./Footer";
+import axios from "axios";
 
 const schema = yup.object({
   username: yup.string().required("Username is required"),
@@ -75,7 +76,8 @@ export default function AdminLoginPage() {
   const onSubmit = async (data) => {
     showLoader();
     try {
-      const res = await API.post("/auth/login", data);
+      // const res = await API.post("/auth/login", data);
+      const res = await axios.post("http://localhost:4000/api/auth/login", data);
       const token = res?.data?.token;
       if (!token) throw new Error("Token missing in response");
       login(token);

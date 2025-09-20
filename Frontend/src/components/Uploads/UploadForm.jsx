@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Upload, Download } from "lucide-react";
 import { toast } from "react-toastify";
 import API from "../../services/api";
+import axios from "axios";
 
 const UpdateMenu = ({ onMenuUpdate }) => {
   const [file, setFile] = useState(null);
@@ -18,10 +19,13 @@ const UpdateMenu = ({ onMenuUpdate }) => {
     formData.append("file", file);
 
     try {
-      const res = await API.post("/menu-upload", formData, {
+      const res = await API.post("/api/menu-upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+    //  try{
+    //   const res = await axios.post("http://localhost:4000/api/menu-upload", formData, {
+    //     headers: { "Content-Type": "multipart/form-data" },
+    //   });
       toast.success(res.data?.message || "File uploaded successfully!");
       setFile(null);
 

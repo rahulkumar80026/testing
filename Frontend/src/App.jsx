@@ -77,6 +77,7 @@ import CustomerRoutes from "./routes/customerRoutes";
 import AdminRoutes from "./routes/adminRoutes";
 import API from "./services/api";
 import { io } from "socket.io-client";
+import axios from "axios";
 
 function LoaderWrapper() {
   const { loading } = useLoader();
@@ -90,7 +91,9 @@ function App() {
   const fetchMenu = async () => {
     try {
       setLoading(true);
-      const res = await API.get("/menu-today"); // always fetch today's menu
+      const res = await API.get("/api/menu-today"); // always fetch today's menu
+      // const res = await axios.get("https://display-menu-1.onrender.com/api/menu-today");
+      console.log("Fetched menu:", res.data);
       setMealData(Array.isArray(res.data) ? res.data[0] : res.data);
     } catch (err) {
       console.error("Error fetching menu:", err);
@@ -103,7 +106,7 @@ function App() {
   useEffect(() => {
     fetchMenu(); // initial load
 
-    const socket = io("https://display-menu-1.onrender.com");
+    const socket = io("https://display-menu-1.onrender.com"); // backend URL
 
     // Only update when backend emits a menu change
     socket.on("menuUpdated", ({ menu }) => {

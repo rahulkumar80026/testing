@@ -50,19 +50,6 @@ export const getTodayMenu = async (req, res) => {
   }
 };
 
-export const getNextDayMenu = async (req, res) => {
-  try {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dayName = tomorrow.toLocaleString("en-US", { weekday: "long" });
-    const menu = await Menu.findOne({ day: dayName });
-    if (!menu) return res.status(404).json({ message: "Menu not found for tomorrow" });
-    res.status(200).json(menu);
-  } catch (err) {
-    console.error("Fetch next day menu error:", err);
-    res.status(500).json({ message: "Failed to fetch tomorrow's menu" });
-  }
-};
 
 
 // Download Excel

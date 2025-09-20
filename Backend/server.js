@@ -1,4 +1,3 @@
-
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
@@ -16,7 +15,7 @@ dotenv.config();
 
 
 const app = express();
-app.use(cors({ origin: "https://display-menu-f5f1.vercel.app" }));
+app.use(cors({ origin: process.env.CLIENT_URL || "*" }));
 app.use(express.json());
 
 // ✅ Create HTTP server
@@ -30,12 +29,16 @@ connectDB();
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/uploads", express.static("uploads"));
+// app.use("/uploads", express.static("uploads"));
 app.use("/api", menuRoutes);
 
 // Start scheduler
 scheduler.start();
 
+
+app.get("/", (req, res) => {
+  res.json({ message: "Backend is working!" });
+});
 // error middleware
 app.use(notFound);
 app.use(errorHandler);
