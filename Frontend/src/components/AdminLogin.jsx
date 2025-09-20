@@ -76,8 +76,8 @@ export default function AdminLoginPage() {
   const onSubmit = async (data) => {
     showLoader();
     try {
-      // const res = await API.post("/auth/login", data);
-      const res = await axios.post("http://localhost:4000/api/auth/login", data);
+      const res = await API.post("/api/auth/login", data);
+      // const res = await axios.post("http://localhost:4000/api/auth/login", data);
       const token = res?.data?.token;
       if (!token) throw new Error("Token missing in response");
       login(token);
